@@ -17,6 +17,23 @@ Es una versión independiente basada en [Mayhem Tracker](https://github.com/Yhpr
 
 Descarga `MayhemTracker.exe` de la [última versión](https://github.com/Couchraver/mayhem-tracker-es/releases/latest) y ejecútalo. Es portable: no se instala y puede estar en cualquier carpeta. La app avisa cuando hay una versión nueva y se actualiza sola.
 
+### Si Windows muestra "Windows protegió tu PC"
+
+Es normal: el `.exe` no tiene firma digital (un certificado cuesta cientos de dólares por año), y Windows SmartScreen avisa así con cualquier programa sin firmar que todavía tiene pocas descargas. No significa que se haya detectado nada.
+
+1. Haz clic en **Más información**.
+2. Haz clic en **Ejecutar de todas formas**.
+
+Solo pasa la primera vez que lo abres.
+
+Para comprobar que el archivo es el original, compara su SHA256 con el que figura en las notas de la versión. En PowerShell:
+
+```powershell
+Get-FileHash .\MayhemTracker.exe
+```
+
+El código es público, y el `.exe` lo compila GitHub Actions directamente desde este repositorio ([`release.yml`](.github/workflows/release.yml)).
+
 ## Uso
 
 1. Abre el cliente de League e inicia sesión. La app usa la API local del cliente, así que el cliente tiene que estar abierto para detectar tu cuenta, importar el historial o guardar partidas nuevas.
