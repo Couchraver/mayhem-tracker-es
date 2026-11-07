@@ -1,0 +1,138 @@
+# Publica la versión en español cada vez que el autor original publica una.
+#
+# Revisa cada 6 horas la última release de Yhprum/mayhem-tracker. Si este fork
+# todavía no tiene una con la misma etiqueta: baja ese código, traduce los
+# textos nuevos (i18n/), aplica los cambios en español, compila el .exe y lo
+# publica acá. La app instalada se actualiza sola desde estas releases.
+#
+# Para forzar una compilación: Actions > "Versión en español" > Run workflow.
+
+name: Versión en español
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Recompilar aunque la versión ya esté publicada"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: es-release
+  cancel-in-progress: false
+
+env:
+  UPSTREAM: Yhprum/mayhem-tracker
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.latest.outputs.tag }}
+      build: ${{ steps.latest.outputs.build }}
+    steps:
+      - id: latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG=$(gh release view --repo "$UPSTREAM" --json tagName --jq .tagName)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Ya está publicada la $TAG en español."
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Hay que compilar la $TAG."
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: check
+    if: needs.check.outputs.build == 'true'
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      TAG: ${{ needs.check.outputs.tag }}
+    steps:
+      - name: Herramientas de traducción (este fork)
+        uses: actions/checkout@v4
+        with:
+          path: fork
+
+      - name: Código original de la versión ${{ needs.check.outputs.tag }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.UPSTREAM }}
+          ref: ${{ needs.check.outputs.tag }}
+          path: app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Buscar textos nuevos
+        working-directory: fork/i18n
+        run: |
+          npm ci
+          node extract.mjs ../../app
+
+      - name: Traducir los que falten
+        working-directory: fork/i18n
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node translate.mjs
+
+      - name: Guardar las traducciones en el fork
+        working-directory: fork
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add i18n/strings.json i18n/es.json
+          if git diff --cached --quiet; then
+            echo "Sin textos nuevos."
+          else
+            git commit -m "Traducciones para $TAG"
+            git push
+          fi
+
+      - name: Dependencias de la app
+        working-directory: app
+        run: |
+          npm ci
+          npm run rebuild
+
+      - name: Aplicar la versión en español
+        working-directory: app
+        run: node ../fork/i18n/apply.mjs .
+
+      - name: Compilar el .exe
+        working-directory: app
+        run: npm run dist
+
+      - name: Publicar la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$TAG" --repo "$UPSTREAM" --json body --jq .body > notes-upstream.md
+          {
+            echo "Versión en español de [Mayhem Tracker $TAG](https://github.com/$UPSTREAM/releases/tag/$TAG)."
+            echo
+            echo "---"
+            echo
+            cat notes-upstream.md
+          } > notes.md
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" app/dist/MayhemTracker.exe --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" app/dist/MayhemTracker.exe \
+              --repo "$GITHUB_REPOSITORY" \
+              --target main \
+              --title "$TAG (español)" \
+              --notes-file notes.md
+          fi
