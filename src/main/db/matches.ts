@@ -46,6 +46,8 @@ export const MATCH_ROW_SQL = `
       ps.item0, ps.item1, ps.item2, ps.item3, ps.item4, ps.item5,
       (SELECT GROUP_CONCAT(ga.augment_id) FROM game_augments ga
         WHERE ga.game_id = g.game_id ORDER BY ga.slot) as augment_ids,
+      (SELECT gg.grade FROM game_grades gg
+        WHERE gg.game_id = g.game_id AND gg.puuid = g.puuid) as grade,
 ${GAME_MAX_STATS_SQL}`;
 
 const MATCH_SORT_COLUMNS: Record<string, string> = {
@@ -402,8 +404,10 @@ function getMatchParticipants(gameId: number): MatchParticipantRecord[] {
              kills, deaths, assists, double_kills, triple_kills, quadra_kills, penta_kills,
              total_damage_dealt, total_damage_taken, gold_earned, total_heal,
              largest_killing_spree, spell1, spell2,
-             item0, item1, item2, item3, item4, item5, item6
-      FROM match_participants
+             item0, item1, item2, item3, item4, item5, item6,
+             (SELECT gg.grade FROM game_grades gg
+               WHERE gg.game_id = mp.game_id AND gg.puuid = mp.puuid) as grade
+      FROM match_participants mp
       WHERE game_id = ?
       ORDER BY participant_id
     `)
@@ -449,6 +453,7 @@ function getMatchParticipants(gameId: number): MatchParticipantRecord[] {
     spell2Id: r.spell2,
     items: [r.item0, r.item1, r.item2, r.item3, r.item4, r.item5, r.item6].map((i) => i ?? 0),
     augments: augments.get(r.participant_id) ?? [],
+    grade: r.grade ?? null,
   }));
 }
 

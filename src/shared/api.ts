@@ -91,6 +91,8 @@ export interface MatchListItem {
   item5: number | null;
   score: number | null;
   score_badge: "MVP" | "ACE" | null;
+  // Mastery grade (S+, S, A-...), null for games captured without one
+  grade: string | null;
   spell1: number | null;
   spell2: number | null;
   augment_ids: string | null;
@@ -189,6 +191,9 @@ export interface MatchParticipantRecord {
   spell2Id: number | null;
   items: number[];
   augments: number[];
+  // Mastery grade from the end-of-game screen. Only ours and our premades' are
+  // ever known, and only for games played with the app open.
+  grade?: string | null;
 }
 
 export interface MatchDetail {
@@ -218,6 +223,8 @@ export interface ChampionStats {
   triple_kills: number;
   quadra_kills: number;
   penta_kills: number;
+  // Best mastery grade ever recorded on the champion, null until one is
+  best_grade: string | null;
 }
 
 export interface AugmentStats {
@@ -518,6 +525,7 @@ export interface GlobalChampionDetail {
 
 export interface ParsedParticipant {
   participantId: number;
+  grade?: string | null;
   championId: number;
   teamId: number;
   puuid: string | null;

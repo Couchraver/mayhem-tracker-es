@@ -69,7 +69,7 @@ function parseDigest(digest: unknown): string | null {
 export async function checkForUpdate(): Promise<UpdateInfo> {
   try {
     const res = await fetch(
-      `https://api.github.com/repos/Yhprum/mayhem-tracker/releases?per_page=${RELEASE_PAGE_SIZE}`,
+      `https://api.github.com/repos/Couchraver/mayhem-tracker-es/releases?per_page=${RELEASE_PAGE_SIZE}`,
       {
         headers: { "User-Agent": "mayhem-tracker" },
         signal: AbortSignal.timeout(CHECK_TIMEOUT_MS),
@@ -131,7 +131,7 @@ export async function downloadAndInstall(
   if (!portableExe) {
     return { success: false, error: "In-app update only works in the portable exe build" };
   }
-  if (!assetUrl.startsWith("https://github.com/Yhprum/mayhem-tracker/")) {
+  if (!assetUrl.startsWith("https://github.com/Couchraver/mayhem-tracker-es/")) {
     return { success: false, error: "Unexpected download URL" };
   }
 

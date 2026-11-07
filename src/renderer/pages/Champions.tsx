@@ -4,6 +4,7 @@ import { useIpc } from "../hooks/useIpc";
 import { useViewState } from "../hooks/useViewState";
 import { useSort } from "../hooks/useSort";
 import { useChampionData, getChampionName, useAugmentData } from "../hooks/useChampions";
+import GradeBadge from "../components/GradeBadge";
 import type {
   ChampionStats,
   AugmentStats,
@@ -379,6 +380,7 @@ export default function Champions() {
                       <span className="text-sm text-lol-text-bright">
                         {getChampionName(champData, c.champion_id)}
                       </span>
+                      <GradeBadge grade={c.best_grade} />
                     </div>
                   </td>
                   <td className="px-2 py-2 text-sm text-lol-text-bright text-right tabular-nums">

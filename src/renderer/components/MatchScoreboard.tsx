@@ -22,6 +22,7 @@ import ItemIcon from "./ItemIcon";
 import SummonerSpellIcon from "./SummonerSpellIcon";
 import MultikillBadge from "./MultikillBadge";
 import { ScoreBadge } from "./ScoreCell";
+import GradeBadge from "./GradeBadge";
 import Kda from "./Kda";
 import RiotId from "./RiotId";
 
@@ -282,6 +283,7 @@ function PlayerRow({
         </div>
         <div className="text-[10px] text-lol-text truncate">
           {getChampionName(champData, p.championId)}
+          <GradeBadge grade={p.grade} className="ml-1" />
         </div>
       </div>
 

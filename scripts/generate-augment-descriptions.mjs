@@ -148,10 +148,10 @@ const PERCENTAGE_STATS = new Set([8]);
 // a percent-display calculation needs the usual second x100 on top, which is
 // what turns Juicebox's 0.00035 omnivamp-per-AP into the 3.5% the game shows.
 function statTerm(ratio, percent, part, marker) {
-  const qualifier = part.mStatFormula === BONUS_STAT_FORMULA ? " bonus" : "";
+  const qualifier = part.mStatFormula === BONUS_STAT_FORMULA ? " adicional" : "";
   if (PERCENTAGE_STATS.has(part.mStat ?? 0)) {
     if (!ratio) return undefined;
-    return `1 per ${formatNumber(100 / ratio)}%${qualifier}${marker}`;
+    return `1 cada ${formatNumber(100 / ratio)}%${qualifier}${marker}`;
   }
   return `${formatNumber(ratio * 100 * (percent ? 100 : 1))}%${qualifier}${marker}`;
 }
@@ -693,11 +693,11 @@ async function main() {
   // to supply the id -> loc key -> spell mapping, not another 32MB of text.
   const [stringtable, cherry] = await Promise.all([
     fetchJson(
-      `${CDRAGON}/latest/game/en_us/data/menu/en_us/lol.stringtable.json`,
-      "en_us stringtable",
+      `${CDRAGON}/latest/game/es_mx/data/menu/en_us/lol.stringtable.json`,
+      "es_mx stringtable",
     ),
     fetchJson(
-      `${CDRAGON}/latest/plugins/rcp-be-lol-game-data/global/default/v1/cherry-augments.json`,
+      `${CDRAGON}/latest/plugins/rcp-be-lol-game-data/global/es_mx/v1/cherry-augments.json`,
       "cherry-augments",
     ),
   ]);

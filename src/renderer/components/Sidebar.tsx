@@ -275,7 +275,7 @@ export default function Sidebar() {
           <button
             onClick={() =>
               window.api.openUrl(
-                `https://github.com/Yhprum/mayhem-tracker/releases/tag/v${version}`,
+                `https://github.com/Couchraver/mayhem-tracker-es/releases/tag/v${version}`,
               )
             }
             className="text-[10px] text-lol-text/50 hover:text-lol-text transition-colors cursor-pointer"

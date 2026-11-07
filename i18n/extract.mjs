@@ -47,10 +47,13 @@ function looksLikeText(s, loose = false) {
   if (!(/\{\d+\}/.test(s) ? /[A-Za-z]/ : /[A-Za-z]{2,}/).test(literal)) return false;
   if (/:\/\/|^\/|^\.\.?\/|\\|\.(tsx?|json|png|svg|db|exe|ico)\b/i.test(literal)) return false;
   if (/^(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|WITH|PRAGMA)\b/i.test(literal)) return false;
-  if (/\b(FROM|WHERE|JOIN|GROUP BY|ORDER BY)\b/.test(literal)) return false;
+  if (/\b(FROM|WHERE|JOIN|GROUP BY|ORDER BY|THEN)\b/.test(literal)) return false;
   if (/^#[0-9a-f]{3,8}$/i.test(literal)) return false;
   // SQL suelto, comandos de cmd y certificados
-  if (/\s=\s|^goto |\b[a-z]+_[a-z_]+\b|\s[<>=]=?\s\?|>nul|^copy \/|^start ""|-----BEGIN/.test(literal)) return false;
+  if (
+    /\s=\s|^goto |\b[a-z]+_[a-z_]+\b|\s[<>=]=?\s\?|>nul|^copy \/|^start ""|-----BEGIN/.test(literal)
+  )
+    return false;
   if (literal.length > 60 && !/\s/.test(literal.slice(0, 60))) return false;
   if (/^%[a-z]:/.test(literal)) return false;
   const words = literal.split(/\s+/).filter(Boolean);
@@ -58,7 +61,12 @@ function looksLikeText(s, loose = false) {
   const classy = words.filter((w) => /[-:[\]/@](?=.)/.test(w) && /^[!@a-z0-9]/.test(w)).length;
   if (classy && classy >= words.length * 0.5) return false;
   if (/^(@echo|if |set |goto |rd |del |timeout |\{"|window\[)/.test(literal)) return false;
-  if (/^(AND|OR|ASC|DESC|GET|POST|VACUUM|NFKD|JSON|KIWI|NONE|INFO|WARN|ERROR|FATAL)( \{\d+\})?$/.test(literal)) return false;
+  if (
+    /^(AND|OR|ASC|DESC|GET|POST|VACUUM|NFKD|JSON|KIWI|NONE|INFO|WARN|ERROR|FATAL)( \{\d+\})?$/.test(
+      literal,
+    )
+  )
+    return false;
   if (/\bIN \(|\bdate\(|\.puuid\b|\bMAX\(/.test(literal)) return false;
   // "{0} of {1}": con huecos, una palabra suelta en minúscula también es texto
   if (words.length === 1 && !/\{\d+\}/.test(s)) {
@@ -150,7 +158,11 @@ function walk(node, parent, grand, file, ctx) {
       return;
     case "StringLiteral":
       if (SKIP_PARENTS.has(parent?.type)) return;
-      if ((parent?.type === "ObjectProperty" || parent?.type === "ClassProperty") && parent.key === node && !parent.computed)
+      if (
+        (parent?.type === "ObjectProperty" || parent?.type === "ClassProperty") &&
+        parent.key === node &&
+        !parent.computed
+      )
         return;
       if (parent?.type === "MemberExpression" && parent.property === node) return;
       add(node.value, file, parent?.type === "ConditionalExpression" && parent.test !== node);
@@ -170,7 +182,8 @@ function walk(node, parent, grand, file, ctx) {
   }
 
   for (const k of Object.keys(node)) {
-    if (k === "loc" || k === "start" || k === "end" || k === "extra" || k.endsWith("Comments")) continue;
+    if (k === "loc" || k === "start" || k === "end" || k === "extra" || k.endsWith("Comments"))
+      continue;
     const v = node[k];
     if (Array.isArray(v)) for (const c of v) walk(c, node, parent, file, ctx);
     else if (v && typeof v.type === "string") walk(v, node, parent, file, ctx);
@@ -210,4 +223,6 @@ for (const file of files) {
 
 const strings = Object.fromEntries([...found.entries()].sort(([a], [b]) => a.localeCompare(b)));
 fs.writeFileSync(OUT, JSON.stringify(strings, null, 2) + "\n");
-console.log(`${found.size} textos en ${files.length} archivos -> ${path.relative(process.cwd(), OUT)}`);
+console.log(
+  `${found.size} textos en ${files.length} archivos -> ${path.relative(process.cwd(), OUT)}`,
+);

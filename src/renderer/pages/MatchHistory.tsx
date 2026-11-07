@@ -28,6 +28,7 @@ import MatchScoreboard from "../components/MatchScoreboard";
 import MultikillBadge from "../components/MultikillBadge";
 import StatBars from "../components/StatBars";
 import ScoreCell from "../components/ScoreCell";
+import GradeBadge from "../components/GradeBadge";
 import StatCard from "../components/StatCard";
 import SummonerIcon from "../components/SummonerIcon";
 import SummonerSpellIcon from "../components/SummonerSpellIcon";
@@ -1185,6 +1186,7 @@ function GameRow({
           <div className="text-sm text-lol-text-bright truncate">
             {getChampionName(champData, match.champion_id)}
           </div>
+          <GradeBadge grade={match.grade} className="mt-0.5" />
         </div>
         <div className="w-24 shrink-0">
           <div className="text-sm text-lol-text-bright">

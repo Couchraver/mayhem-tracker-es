@@ -1,7 +1,7 @@
-// Traduce la interfaz al español directamente en el DOM, sin tocar los
-// componentes de la app original. Así, cuando el autor actualiza su código, no
-// hay nada que fusionar: este archivo solo necesita que es.json tenga las
-// claves nuevas (extract.mjs + translate.mjs se encargan de eso).
+// Traduce la interfaz al español directamente en el DOM: los componentes
+// siguen escribiendo sus textos en inglés y este archivo los reemplaza con
+// es.json. Al agregar textos nuevos, i18n/extract.mjs los encuentra e
+// i18n/translate.mjs los traduce.
 //
 // Cada nodo de texto se compara contra el diccionario de dos formas:
 //   - exacta: "Match History" -> "Historial de partidas"
@@ -220,4 +220,5 @@ observe();
 
 // Para el título de la ventana y los diálogos nativos que el renderer abre
 const nativeConfirm = window.confirm.bind(window);
-window.confirm = (message?: string) => nativeConfirm(message && (translateText(message) ?? message));
+window.confirm = (message?: string) =>
+  nativeConfirm(message && (translateText(message) ?? message));

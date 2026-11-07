@@ -1,12 +1,11 @@
 {
   "name": "mayhem-tracker-es-i18n",
   "private": true,
-  "type": "module",
   "description": "Herramientas para la versión en español de Mayhem Tracker",
+  "type": "module",
   "scripts": {
     "extract": "node extract.mjs",
-    "translate": "node translate.mjs",
-    "apply": "node apply.mjs"
+    "translate": "node translate.mjs"
   },
   "dependencies": {
     "@babel/parser": "^7.28.0"

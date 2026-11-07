@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const STRINGS = path.join(HERE, "strings.json");
-const ES = path.join(HERE, "es.json");
+const ES = path.join(HERE, "..", "src", "renderer", "i18n", "es.json");
 const MODEL = process.env.TRANSLATE_MODEL || "claude-sonnet-5-5";
 const BATCH = 60;
 

@@ -206,6 +206,19 @@ function createTables() {
       icon_path      TEXT NOT NULL,
       PRIMARY KEY (game_id, challenge_id)
     );
+
+    -- The mastery grade (S+, S, A-...) each player got, ours and our premades'.
+    -- The client only answers for the game on the end-of-game screen and
+    -- nothing else keeps it, Riot's match history included, so a game missed
+    -- there has no grade, ever. Keyed by puuid rather than participant because
+    -- the capture can land before the game itself is stored.
+    CREATE TABLE IF NOT EXISTS game_grades (
+      game_id     INTEGER NOT NULL,
+      puuid       TEXT NOT NULL,
+      champion_id INTEGER NOT NULL,
+      grade       TEXT NOT NULL,
+      PRIMARY KEY (game_id, puuid)
+    );
   `);
 }
 

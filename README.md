@@ -1,64 +1,66 @@
-# Mayhem Tracker
+# Mayhem Tracker (español)
 
-Desktop app for tracking ARAM Mayhem match history in League of Legends. Connects to the League Client (LCU) to automatically record matches and display stats.
+App de escritorio para registrar tu historial de **ARAM: Caos** en League of Legends. Se conecta al cliente de LoL para guardar cada partida automáticamente y mostrar estadísticas, en español.
 
-<img width="1280" height="820" alt="image" src="https://github.com/user-attachments/assets/cdce7dae-d96e-4be0-8d0a-bf9c7ee245d3" />
+Es una versión independiente basada en [Mayhem Tracker](https://github.com/Yhprum/mayhem-tracker) de Yhprum (licencia MIT), con la interfaz y los datos del juego en español y funciones propias.
 
-## Features
+## Funciones
 
-- Automatic match detection via League Client API
-- Supports the limited-time ARAM Mayhem Classic-ish game mode
-- Match history with detailed game breakdowns
-- Live scoreboard while a game is running, and a post-game recap when it ends
-- Export any game as a shareable PNG from the recap or the match list
-- Season recaps for each Mayhem set (or all time), shareable as an image the same way
-- Champion, augment, and friend stats with win rates
-- Aggregate statistics from all players in your games
-- Local SQLite database
+- Detecta las partidas automáticamente a través del cliente de League
+- Historial con el detalle de cada partida, marcador en vivo y resumen al terminar
+- **Nota de maestría (S+, S, A…) de cada partida**, tuya y de tus premades
+- Estadísticas de campeones, aumentos y amigos, con porcentaje de victorias
+- Resúmenes de temporada y partidas exportables como imagen PNG
+- Base de datos local SQLite con copias de seguridad automáticas
 
-## Download
+## Descarga
 
-Grab `MayhemTracker.exe` from the [latest release](https://github.com/Yhprum/mayhem-tracker/releases/latest) and run it. It's a portable Windows build with no installer, so it can live anywhere.
+Descarga `MayhemTracker.exe` de la [última versión](https://github.com/Couchraver/mayhem-tracker-es/releases/latest) y ejecútalo. Es portable: no se instala y puede estar en cualquier carpeta. La app avisa cuando hay una versión nueva y se actualiza sola.
 
-## Usage
+## Uso
 
-1. Start the League client and sign in. The app talks to the client's local API, so the client has to be running for it to detect your account, import history, or record new games.
-2. Launch Mayhem Tracker. The sidebar shows the connection status once it finds the client.
-3. The first time an account connects it automatically imports your past Mayhem games. Riot only serves an account's last 1000 matches across all queues, so that window is how far back the import can reach. A large one takes a few minutes and fills the app in as it runs.
-4. After that it records each game as you finish it, so leave it running while you play.
+1. Abre el cliente de League e inicia sesión. La app usa la API local del cliente, así que el cliente tiene que estar abierto para detectar tu cuenta, importar el historial o guardar partidas nuevas.
+2. Abre Mayhem Tracker. La barra lateral muestra el estado de la conexión.
+3. La primera vez que se conecta una cuenta, importa tus partidas anteriores de Mayhem. Riot solo guarda las últimas 1000 partidas de cada cuenta (de todas las colas), así que la importación llega hasta ahí.
+4. Después guarda cada partida al terminarla: déjala abierta mientras juegas.
 
-You can re-run the import at any time from **Settings → Backfill match history**, which is also how you finish one you cancelled. Games already stored stay readable with the client closed; only importing and recording need it open.
+Las partidas se guardan en `%APPDATA%\mayhem-tracker\data`, con copias de seguridad automáticas al lado.
 
-Match data lives in `%APPDATA%\mayhem-tracker\data`, with automatic backups alongside it. The app checks GitHub for new releases and offers to update itself when one lands.
+## Actualizaciones automáticas
 
-## Tech Stack
+- **Cada parche de LoL:** campeones, objetos, aumentos e íconos se descargan solos al abrir la app. Las descripciones de los aumentos vienen incluidas en la app, así que una Action ([`patch-update.yml`](.github/workflows/patch-update.yml)) revisa cada 6 horas si salió un parche nuevo. Si cambiaron, las regenera en español y publica una versión nueva.
+- **Versiones a mano:** `npm version patch` (o `minor`) y `git push --follow-tags`. La Action [`release.yml`](.github/workflows/release.yml) compila y publica.
 
-Electron + React + TypeScript, built with electron-vite. Uses Tailwind CSS for styling, better-sqlite3 for local storage, and league-connect for LCU integration.
+## Traducción
 
-## Development
+Los componentes escriben sus textos en inglés y [`src/renderer/i18n/runtime.ts`](src/renderer/i18n/runtime.ts) los reemplaza en pantalla con [`es.json`](src/renderer/i18n/es.json). Al agregar textos nuevos:
 
 ```bash
-npm install
-npm run dev       # start in dev mode
+cd i18n && npm ci
+node extract.mjs                          # junta los textos del código en strings.json
+ANTHROPIC_API_KEY=... node translate.mjs  # traduce con Claude los que falten en es.json
 ```
 
-better-sqlite3 ships prebuilt Node-API binaries, so there is no native module to rebuild for Electron. The Electron binary itself downloads the first time `npm run dev` needs it.
+También se pueden agregar a mano en `es.json`.
 
-These run on pull requests, again before a tagged release, and locally via
-`preversion`, so `npm version` will not tag a tree that fails them:
+## Desarrollo
+
+```bash
+npm ci --ignore-scripts
+node node_modules/electron/install.js
+npm run dev
+```
+
+Antes de publicar (la Action también lo revisa):
 
 ```bash
 npm run typecheck
 npm run lint
-npm run format    # rewrites in place; format:check only reports
+npm run format
 ```
 
-## Build
+Para compilar el ejecutable portable de Windows: `npm run dist`.
 
-```bash
-npm run dist      # build Windows portable executable
-```
+## Aviso
 
-## Disclaimer
-
-Mayhem Tracker was created under Riot Games' "Legal Jibber Jabber" policy using assets owned by Riot Games. Riot Games does not endorse or sponsor this project.
+Mayhem Tracker se creó bajo la política "Legal Jibber Jabber" de Riot Games usando recursos de Riot Games. Riot Games no respalda ni patrocina este proyecto.

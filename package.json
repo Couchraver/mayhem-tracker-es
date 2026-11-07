@@ -1,7 +1,7 @@
 {
   "name": "mayhem-tracker",
   "version": "1.15.0",
-  "description": "ARAM Mayhem match history tracker",
+  "description": "Historial de partidas de ARAM: Caos (versión en español)",
   "license": "MIT",
   "main": "./out/main/index.js",
   "scripts": {
@@ -58,7 +58,9 @@
       "!**/node_modules/node-addon-api/**"
     ],
     "electronLanguages": [
-      "en-US"
+      "en-US",
+      "es-419",
+      "es"
     ],
     "npmRebuild": false,
     "win": {

@@ -19,6 +19,13 @@ export const EXCLUDED_ITEMS_SQL = EXCLUDED_ITEM_IDS.join(", ");
 // item0..item6 on both player_stats and match_participants; slot 6 is the trinket
 export const ITEM_SLOTS = [0, 1, 2, 3, 4, 5, 6];
 
+// S+ above S above S- above A+..., for picking a best grade. Best ever rather
+// than within the filters: grades are only known from when the app started
+// recording them, so a patch filter would mostly hide what little there is.
+const GRADE_RANK_SQL = `(CASE substr(gg.grade, 1, 1)
+    WHEN 'S' THEN 4 WHEN 'A' THEN 3 WHEN 'B' THEN 2 WHEN 'C' THEN 1 ELSE 0 END) * 3
+  + (CASE substr(gg.grade, 2, 1) WHEN '+' THEN 2 WHEN '-' THEN 0 ELSE 1 END)`;
+
 export function getChampionStatsAll(
   patch?: string,
   queue?: number,
@@ -52,7 +59,11 @@ export function getChampionStatsAll(
       SUM(ps.double_kills) as double_kills,
       SUM(ps.triple_kills) as triple_kills,
       SUM(ps.quadra_kills) as quadra_kills,
-      SUM(ps.penta_kills) as penta_kills
+      SUM(ps.penta_kills) as penta_kills,
+      (SELECT gg.grade FROM game_grades gg
+        JOIN games gx ON gx.game_id = gg.game_id AND gx.puuid = gg.puuid
+        WHERE gg.champion_id = ps.champion_id
+        ORDER BY ${GRADE_RANK_SQL} DESC LIMIT 1) as best_grade
     FROM player_stats ps
     JOIN games g ON ps.game_id = g.game_id
     WHERE ${where.join(" AND ")}

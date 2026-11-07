@@ -45,6 +45,8 @@ export {
   saveGameChallenges,
   hasGameChallenges,
 } from "./challenges";
+export { saveGameGrades, hasGameGrades } from "./grades";
+export type { GradeRow } from "./grades";
 export { setGameMap, getGameMapName, getGameProfileIcon, getPlayerHistories } from "./live";
 export type { PlayerRef, PlayerHistory } from "./live";
 export { writeExportTo, importSummoners, importGames } from "./transfer";

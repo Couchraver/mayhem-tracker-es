@@ -12,5 +12,5 @@ export function cdragonAssetUrl(branch: string, iconPath: string): string {
 }
 
 export function cherryAugmentsUrl(branch: string): string {
-  return `https://raw.communitydragon.org/${branch}/plugins/rcp-be-lol-game-data/global/default/v1/cherry-augments.json`;
+  return `https://raw.communitydragon.org/${branch}/plugins/rcp-be-lol-game-data/global/es_mx/v1/cherry-augments.json`;
 }

@@ -268,7 +268,7 @@ export function registerIpcHandlers() {
   handle("exportData", async (event) => {
     const win = senderWindow(event);
     const options = {
-      title: "Export Mayhem Data",
+      title: "Exportar datos de Mayhem",
       defaultPath: `mayhem-backup-${new Date().toISOString().slice(0, 10)}.json`,
       filters: [{ name: "JSON", extensions: ["json"] }],
     };
@@ -309,7 +309,7 @@ export function registerIpcHandlers() {
   handle("importData", async (event) => {
     const win = senderWindow(event);
     const options = {
-      title: "Import Mayhem Data",
+      title: "Importar datos de Mayhem",
       filters: [{ name: "JSON", extensions: ["json"] }],
       properties: ["openFile" as const],
     };

@@ -9,6 +9,7 @@ import { startLogging } from "./log";
 import { startPolling, stopPolling, isClientConnected, fetchNewGames } from "./lcu";
 import { startLiveTracking, stopLiveTracking } from "./live";
 import { startChallengeTracking } from "./challenges";
+import { startGradeTracking } from "./grades";
 import { loadChampionData, loadAugmentData, waitForChampionData } from "./dragon";
 import { applySecurityPolicy } from "./security";
 import { APP_USER_MODEL_ID, ensureStartMenuShortcut } from "./shortcut";
@@ -124,7 +125,7 @@ function createTray() {
 
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: "Show Window",
+      label: "Mostrar ventana",
       click: () => {
         mainWindow?.show();
         mainWindow?.focus();
@@ -132,7 +133,7 @@ function createTray() {
     },
     { type: "separator" },
     {
-      label: "Quit",
+      label: "Salir",
       click: () => {
         isQuitting = true;
         app.quit();
@@ -192,6 +193,7 @@ app.whenReady().then(async () => {
   // Records where the ARAM challenges stand each day the client is up. The
   // client keeps no history of its own, so a day nobody writes down is gone.
   startChallengeTracking(win);
+  startGradeTracking(win);
   startBackupSchedule();
 });
 

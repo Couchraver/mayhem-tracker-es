@@ -3,6 +3,13 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  # patch-update.yml la llama después de crear la etiqueta: una etiqueta
+  # empujada con el token de la Action no dispara este workflow por sí sola
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
 
 permissions:
   contents: write
@@ -13,8 +20,12 @@ jobs:
     defaults:
       run:
         shell: bash
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: actions/setup-node@v4
         with:
@@ -23,10 +34,10 @@ jobs:
 
       - name: Verify tag matches package.json version
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          VERSION="${TAG#v}"
           PKG=$(node -p "require('./package.json').version")
-          if [ "$TAG" != "$PKG" ]; then
-            echo "::error::tag $GITHUB_REF_NAME does not match package.json version $PKG"
+          if [ "$VERSION" != "$PKG" ]; then
+            echo "::error::tag $TAG does not match package.json version $PKG"
             exit 1
           fi
 
@@ -52,7 +63,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
+          gh release create "$TAG" \
             dist/MayhemTracker.exe \
-            --title "$GITHUB_REF_NAME" \
+            --title "$TAG" \
             --generate-notes

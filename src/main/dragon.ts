@@ -52,7 +52,7 @@ export function loadChampionData() {
       const version = versions[0];
 
       const data = await fetchJson(
-        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`,
+        `https://ddragon.leagueoflegends.com/cdn/${version}/data/es_MX/champion.json`,
       );
       const cache: typeof championCache = {};
       for (const [key, champ] of Object.entries(data.data) as any[]) {
@@ -178,7 +178,7 @@ const itemPromises = new Map<string, Promise<Record<number, ItemInfo>>>();
 let latestLivePatch: string | null = null;
 
 const itemsJsonUrl = (branch: string) =>
-  `https://raw.communitydragon.org/${branch}/plugins/rcp-be-lol-game-data/global/default/v1/items.json`;
+  `https://raw.communitydragon.org/${branch}/plugins/rcp-be-lol-game-data/global/es_mx/v1/items.json`;
 
 // Map a game's major.minor patch to the CommunityDragon branch that has its
 // data: live patches have their own branch, the current patch is "latest",
@@ -256,7 +256,7 @@ export function loadSummonerSpellData(): Promise<Record<number, SummonerSpellInf
   if (!spellPromise) {
     spellPromise = (async () => {
       const data = await fetchJson(
-        "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/summoner-spells.json",
+        "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/es_mx/v1/summoner-spells.json",
       );
       const spells: Record<number, SummonerSpellInfo> = {};
       if (Array.isArray(data)) {

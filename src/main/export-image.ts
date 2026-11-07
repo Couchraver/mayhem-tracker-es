@@ -75,8 +75,8 @@ function defaultFileName(card: CardSpec): string {
 }
 
 const DIALOG_TITLES: Record<CardSpec["kind"], string> = {
-  game: "Export Game Image",
-  season: "Export Season Recap",
+  game: "Exportar imagen de la partida",
+  season: "Exportar resumen de temporada",
 };
 
 function createCardWindow(): BrowserWindow {
@@ -185,7 +185,7 @@ export async function exportCardImage(
   const options = {
     title: DIALOG_TITLES[card.kind],
     defaultPath: defaultFileName(card),
-    filters: [{ name: "PNG Image", extensions: ["png"] }],
+    filters: [{ name: "Imagen PNG", extensions: ["png"] }],
   };
   // Parented to the window when there is one, so the dialog is modal
   const chosen = parent

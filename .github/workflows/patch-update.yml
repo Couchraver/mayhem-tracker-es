@@ -1,0 +1,62 @@
+# Cada parche de LoL puede cambiar los aumentos de Mayhem. Nombres, rarezas e
+# íconos se descargan solos al abrir la app, pero las descripciones vienen
+# incluidas (ver scripts/generate-augment-descriptions.mjs). Esta Action las
+# regenera cada 6 horas y, si cambiaron, publica una versión nueva.
+#
+# Para forzarla: Actions > "Actualizar por parche" > Run workflow.
+
+name: Actualizar por parche
+
+on:
+  schedule:
+    - cron: "41 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: patch-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.bump.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # El generador solo usa módulos de Node, no hace falta npm ci
+      - name: Regenerar descripciones de aumentos
+        run: node scripts/generate-augment-descriptions.mjs
+
+      - name: Nueva versión si cambiaron
+        id: bump
+        run: |
+          if git diff --quiet -- src/main/augment-descriptions.json; then
+            echo "Los aumentos no cambiaron."
+            exit 0
+          fi
+          PATCH=$(node -p "require('./src/main/augment-descriptions.json').patch")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/main/augment-descriptions.json src/renderer/texticons.json
+          git commit -m "Aumentos del parche $PATCH"
+          # Sin scripts: preversion corre typecheck y lint, que release.yml ya hace
+          npm version patch --ignore-scripts -m "%s: aumentos del parche $PATCH"
+          git push --follow-tags
+          echo "tag=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+  release:
+    needs: update
+    if: needs.update.outputs.tag != ''
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.update.outputs.tag }}
