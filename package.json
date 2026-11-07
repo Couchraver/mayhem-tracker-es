@@ -1,6 +1,6 @@
 {
   "name": "mayhem-tracker",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Historial de partidas de ARAM: Caos (versión en español)",
   "license": "MIT",
   "main": "./out/main/index.js",
