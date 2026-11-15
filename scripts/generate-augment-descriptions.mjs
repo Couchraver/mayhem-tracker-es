@@ -43,13 +43,39 @@ const MAX_BRANCH_LOOKBACK = 12;
 
 const kiwiBinUrl = (branch) => `${CDRAGON}/${branch}/game/maps/modespecificdata/kiwi.bin.json`;
 
+// CommunityDragon sits behind Cloudflare and goes down for hours at a time
+// (522s, timeouts). Those are retried, and if they outlast the retries the
+// error is marked transient so main() can bow out without failing the run.
+const RETRY_DELAYS_MS = [5_000, 20_000, 60_000];
+
+class TransientError extends Error {}
+
 async function fetchJson(url, label) {
   process.stdout.write(`  ${label} … `);
-  const res = await fetch(url, { headers: { "User-Agent": "MayhemTracker-build/1.0" } });
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`);
-  const text = await res.text();
-  console.log(`${(text.length / 1e6).toFixed(1)}MB`);
-  return JSON.parse(text);
+  for (let attempt = 0; ; attempt++) {
+    let res = null;
+    try {
+      res = await fetch(url, {
+        headers: { "User-Agent": "MayhemTracker-build/1.0" },
+        signal: AbortSignal.timeout(120_000),
+      });
+    } catch (err) {
+      if (attempt >= RETRY_DELAYS_MS.length) throw new TransientError(`${err.message} for ${url}`);
+    }
+    if (res?.ok) {
+      const text = await res.text();
+      console.log(`${(text.length / 1e6).toFixed(1)}MB`);
+      return JSON.parse(text);
+    }
+    // A 404 or similar is a real answer, not an outage
+    if (res && res.status < 500 && res.status !== 429) {
+      throw new Error(`${res.status} ${res.statusText} for ${url}`);
+    }
+    const reason = res ? String(res.status) : "no answer";
+    if (attempt >= RETRY_DELAYS_MS.length) throw new TransientError(`${reason} for ${url}`);
+    process.stdout.write(`${reason}, retrying … `);
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS_MS[attempt]));
+  }
 }
 
 // Numeric patch branches, newest first — "latest" and "pbe" are handled
@@ -815,6 +841,14 @@ async function resolveLivePatch() {
 }
 
 main().catch((err) => {
+  if (err instanceof TransientError) {
+    // Nothing is written until the very end, so the bundled text stays as it
+    // was and the next scheduled run simply tries again.
+    console.log(`\nCommunityDragon is not answering (${err.message}); nothing changed.`);
+    if (process.env.GITHUB_ACTIONS)
+      console.log(`::warning::CommunityDragon no responde: ${err.message}`);
+    return;
+  }
   console.error("\nFailed:", err.message);
   process.exit(1);
 });
