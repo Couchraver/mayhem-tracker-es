@@ -1,5 +1,5 @@
 {
-  "patch": "16.22",
+  "patch": "16.23",
   "descriptions": {
     "1001": "Al infligir y recibir daño, obtienes acumulaciones. Cada vez que reúnes 7 acumulaciones, obtienes <scaleAF>fuerza adaptable</scaleAF>, <scaleArmor>armadura</scaleArmor>, <scaleMR>resistencia mágica</scaleMR>, <attention>tamaño</attention> y <status>tenacidad</status>.",
     "1002": "Obtienes <scaleBonus>100 de Aceleración de Objetos</scaleBonus> (equivalente a un 50% de la reducción de enfriamiento del objeto).<br><br><rules>La aceleración de objetos reduce el enfriamiento %i:cooldown% de las habilidades de todos los objetos.</rules>",
@@ -307,6 +307,10 @@
     "3172": "¡<evolve>Potencia</evolve> <font color='#F0C200'>E</font>!<br><br><evolve>Potencia</evolve> <font color='#F0C200'>E</font> y le otorga <scaleAbilityHaste>20 de Aceleración de Habilidad</scaleAbilityHaste>, un 10% de <silver>daño</silver> aumentado y un 10% de <healing>curaciones</healing> y <shield>escudos</shield> aumentados.",
     "3173": "¡<evolve>Potencia</evolve> <font color='#F0C200'>R</font>!<br><br><evolve>Potencia</evolve> <font color='#F0C200'>R</font> y le otorga <scaleAbilityHaste>20 de Aceleración de Habilidad</scaleAbilityHaste>, un 10% de <silver>daño</silver> aumentado y un 10% de <healing>curaciones</healing> y <shield>escudos</shield> aumentados.",
     "3176": "¡<evolve>Potencia</evolve> <font color='#F0C200'>Ability</font>!<br><br><evolve>Potencia</evolve> <font color='#F0C200'>Ability</font> y le otorga <scaleAbilityHaste>20 de Aceleración de Habilidad</scaleAbilityHaste>, un 10% de <silver>daño</silver> aumentado y un 10% de <healing>curaciones</healing> y <shield>escudos</shield> aumentados.",
+    "3262": "Cada pocos seg, <keywordMajor>autolanzas</keywordMajor> una ráfaga de baba de tu cuerpo, la cual inflige <magicDamage>daño mágico</magicDamage> a los enemigos cercanos. <br><br>Si impactas a un campeón, sueltas una masa que te <healing>cura</healing> si caminas sobre ella.",
+    "3263": "Obtienes <scaleArmor>%i:scaleArmor%Armadura</scaleArmor>, <scaleMR> %i:scaleMR%Resistencia Mágica</scaleMR> y <scaleTenacity>%i:scaleTenacity%Tenacidad</scaleTenacity> adicionales. Esta bonificación aumenta cuando tienes menos de un <scaleHealth>40% de Vida Máxima</scaleHealth>.",
+    "3264": "Obtienes %i:scaleMR% <scaleMR>20 de Resistencia Mágica</scaleMR>. Luego, tu Resistencia <scaleMR>Mágica</scaleMR> adicional aumenta en 25%.",
+    "3265": "Obtienes %i:scaleArmor% <scaleArmor>20 de Armadura</scaleArmor>. Luego, tu <scaleArmor>Armadura</scaleArmor> adicional aumenta en 25%.",
     "12317": "Transmuta todos tus Aumentos en <keywordMajor>Aumentos Prismáticos%i:Augment% aleatorios</keywordMajor>."
   }
 }
